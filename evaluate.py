@@ -38,8 +38,8 @@ if __name__ == "__main__":
     tqdm.write("Get data...")
 
     # Get csv data
-    test_df = pd.read_csv(data['test']['csv'])
-    test_traces = np.load(data['test']['trace'], 'r+')
+    test_df = pd.read_csv(os.path.join(folder, 'test_df.csv'))
+    test_traces = np.load(os.path.join(folder, 'test_np.npy'), 'r+')
     n_total = len(test_traces)
 
     print(f'traces shape: {test_traces.shape}')
@@ -84,8 +84,8 @@ if __name__ == "__main__":
     # Save predictions
     test_df[f'pred_score'] = pred_score
     
-    save_folder = os.path.join("/home/ubuntu/ecg-echo/sjeom/results", module_model['model_name'])
-    if not os.path.exists(save_folder):
-        os.makedirs(save_folder)
-    saved_file = os.path.join(save_folder, f"{module_model['model_name']}_IntTest_predicted-score.csv")
+    #save_folder = os.path.join("/home/ubuntu/ecg-echo/sjeom/results", module_model['model_name'])
+    #if not os.path.exists(save_folder):
+    #    os.makedirs(save_folder)
+    saved_file = os.path.join(folder, f"{module_model['model_name']}_IntTest_predicted-score.csv")
     test_df.to_csv((saved_file), index=False)

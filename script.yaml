@@ -5,32 +5,25 @@
 data:
   folder: model_hx/
   score_col: score_H2FPEF
-  train:
-    csv: /home/ubuntu/ecg-echo/sjeom/230117_train-df.csv
-    trace: /home/ubuntu/ecg-echo/sjeom/230117_train-np.npy
-  valid:
-    csv: /home/ubuntu/ecg-echo/sjeom/230117_val-df.csv
-    trace: /home/ubuntu/ecg-echo/sjeom/230117_valid-np.npy
-  test:
-    csv: /home/ubuntu/ecg-echo/sjeom/230117_test-df.csv
-    trace: /home/ubuntu/ecg-echo/sjeom/230117_test-np.npy
+  whole : ./ecgmaster-echo_365_shape.csv
+  trace_dir : ../../ecg-echo/220927_SevMUSE_EKG_waveform/
   
 setup:
   phase: train
   num_models: 1
   epochs: 100
-  earlystop : 10
+  earlystop : 15
   batch_size: 512
   seed: 626
   sample_freq: 500
   seq_length: 5000
   num_workers : 4
-  ec2: g4dn.metal
+  ec2: g4dn.8xlarge
 
 module:
   model:
     name: RNN15
-    model_name: 230117_RNN15
+    model_name: 230129_RNN15
     data_parallel : False
     dropout_rate: 0.5
     net_filter_size: [64, 128, 196, 256, 320] #[256, 512, 1024, 2048] #resnet50/101/152 

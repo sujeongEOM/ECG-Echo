@@ -96,6 +96,7 @@ if __name__ == "__main__":
     from warnings import warn
     import wandb
     import torch.nn as nn
+    from sklearn.model_selection import train_test_split
 
     # Arguments that will be saved in config file
     parser = argparse.ArgumentParser(add_help=True,
@@ -147,10 +148,19 @@ if __name__ == "__main__":
         json.dump(args, f, indent='\t')
     
     tqdm.write("Building data loaders...")
+
+    df = pd.read_csv(data['whole'])
+    train_df, test_df = train_test_split(df, test_size=0.1, shuffle=True, random_state=626)
+    train_df, valid_df = train_test_split(train_df, test_size=0.1111, shuffle=True, random_state=626)
+
+    train_df.to_csv(os.path.join(folder, 'train_df.csv'), index=False)
+    valid_df.to_csv(os.path.join(folder, 'valid_df.csv'), index=False)
+    test_df.to_csv(os.path.join(folder, 'test_df.csv'), index=False)
+
     # train
-    train_scores = np.array(pd.read_csv(data["train"]["csv"])[data["score_col"]])
+    train_scores = np.array(train_df[data["score_col"]])
     # valid
-    valid_scores = np.array(pd.read_csv(data["valid"]['csv'])[data['score_col']])
+    valid_scores = np.array(valid_df[data['score_col']])
     
     # weights; must be done all together
     whole_scores = np.concatenate([train_scores, valid_scores])
@@ -158,10 +168,10 @@ if __name__ == "__main__":
     weights = compute_weights(whole_scores)
 
     # Dataset and Dataloader
-    train_dataset = CustomDataset(train_scores, weights[:len(train_scores)], data["train"]['trace'])
+    train_dataset = CustomDataset(np.array(train_df["fname"]), train_scores, weights[:len(train_scores)], data['trace_dir'])
     train_loader = DataLoader(dataset=train_dataset, num_workers=config.num_workers, batch_size=config.batch_size, shuffle=True, drop_last=False)
 
-    valid_dataset = CustomDataset(valid_scores, weights[len(train_scores):], data["valid"]['trace'])
+    valid_dataset = CustomDataset(np.array(valid_df["fname"]), valid_scores, weights[len(train_scores):], data['trace_dir'])
     valid_loader = DataLoader(dataset=valid_dataset, num_workers=config.num_workers, batch_size=config.batch_size, shuffle=False, drop_last=False)
     
     tqdm.write("Done!")
